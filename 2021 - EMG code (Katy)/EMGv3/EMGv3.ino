@@ -14,6 +14,7 @@
 #define pinOut2   22
 #define pinOut3   23
 #define pinOut4   24
+
 #define sensorPin A2
 
 
@@ -22,8 +23,9 @@ BLESerial BLESerial(BLE_REQ, BLE_RDY, BLE_RST);
 
 int sensorValue = 0;        // value read from the pot
 int outputValue = 0;        // value output to the PWM (analog out)
+int threshold = 700;
+bool activeSignal = false;
 
-int threshold = 500;
 
 int i;
 int dataIn;
@@ -38,7 +40,6 @@ unsigned long swTime;
 unsigned long swTimeOld;
 bool sendData = false;
 bool swTimeOut = false;
-
 
 
 void setup() {
@@ -61,7 +62,7 @@ void setup() {
   pinMode(pinOut4, OUTPUT);
   digitalWrite(pinOut4, HIGH);
   
-  BLESerial.setLocalName("DevStoneMk1KD");
+  BLESerial.setLocalName("EMGv1");
 
   BLESerial.begin();
 
@@ -81,9 +82,18 @@ void loop() {
   //Polls BLE stack
   BLESerial.poll();
   
-  if (sensorValue > threshold){
-        BLESerial.write("EMG"); //Sends data to phone
-        BLESerial.print(sensorValue);
+  if (sensorValue > threshold && activeSignal == false){
+    BLESerial.write("T");
+//    BLESerial.write("EMG"); //Sends data to phone
+//    BLESerial.print(sensorValue);
+    activeSignal = true;
+    delay(500); //adds time for stability (debounce)
+  }
+    if (sensorValue < threshold && activeSignal == true){
+//    BLESerial.write("EMG"); //Sends data to phone
+//    BLESerial.print(sensorValue);
+    activeSignal = false;
+    delay(500); //adds time for stability (debounce)
   }
 
   for (i = 0; i < swNum; ++i){
