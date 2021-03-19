@@ -70,32 +70,38 @@ void setup() {
 }
 
 void loop() {
-
+  
+  //Reach analog input
   sensorValue = analogRead(sensorPin);
   
-
   //Read input pins
   for (i = 0; i < swNum; ++i){
     swRead[i] = digitalRead(pinSwArray[i]);
   }
 
-  //Polls BLE stack
+  //Poll BLE stack
   BLESerial.poll();
-  
+
+
+//Read data to send TO phone
+
+  //Send Signal based on EMG Sensor Activity
   if (sensorValue > threshold && activeSignal == false){
     BLESerial.write("T");
-//    BLESerial.write("EMG"); //Sends data to phone
-//    BLESerial.print(sensorValue);
+    //  BLESerial.write("EMG"); //Sends data to phone
+    //  BLESerial.print(sensorValue);
     activeSignal = true;
     delay(500); //adds time for stability (debounce)
   }
-    if (sensorValue < threshold && activeSignal == true){
-//    BLESerial.write("EMG"); //Sends data to phone
-//    BLESerial.print(sensorValue);
+  if (sensorValue < threshold && activeSignal == true){
+    //  BLESerial.write("EMG"); //Sends data to phone
+    //  BLESerial.print(sensorValue);
     activeSignal = false;
     delay(500); //adds time for stability (debounce)
   }
 
+
+  //Button/LED Activity
   for (i = 0; i < swNum; ++i){
     if (swRead[i] != swReadOld[i]){
       
@@ -168,7 +174,7 @@ void loop() {
   }
 
 
-//Reads data send FROM phone
+ //Reads data send FROM phone
   //runs if new data is in receave buffer.
   if (BLESerial){
     while((dataIn = BLESerial.read()) > 0){
