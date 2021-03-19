@@ -91,7 +91,9 @@ void loop() {
     //  BLESerial.write("EMG"); //Sends data to phone
     //  BLESerial.print(sensorValue);
     activeSignal = true;
+    digitalWrite(pinOut1, LOW); //Turns LED on
     delay(500); //adds time for stability (debounce)
+    digitalWrite(pinOut1, HIGH); //Turns off LED 
   }
   if (sensorValue < threshold && activeSignal == true){
     //  BLESerial.write("EMG"); //Sends data to phone
